@@ -1,0 +1,43 @@
+@hostname = http://localhost:3000
+
+### GET all tours
+GET {{hostname}}/api/v1/tours
+
+### GET specific tour
+GET {{hostname}}/api/v1/tours/2
+
+### CREATE tour
+POST {{hostname}}/api/v1/tours
+Content-Type: application/json
+
+{
+  "name": "Test tour 2",
+  "duration": 5,
+  "difficulty": "easy"
+}
+
+### Update tour
+PATCH {{hostname}}/api/v1/tours/2
+Content-Type: application/json
+
+{
+  "duration": 19
+}
+
+### Delete tour
+DELETE  {{hostname}}/api/v1/tours/2
+
+### GET all users
+GET {{hostname}}/api/v1/users/
+
+### GET user
+GET {{hostname}}/api/v1/users/1
+
+### Create User
+POST {{hostname}}/api/v1/users
+
+### Update user
+PATCH {{hostname}}/api/v1/users/1
+
+### Delete user
+DELETE {{hostname}}/api/v1/users/1

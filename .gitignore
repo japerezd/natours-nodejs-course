@@ -1,0 +1,21 @@
+# Ignore all files ending with .log in all directories
+*.log
+
+# Ignore the 'build' directory and all its contents in the root directory
+/build/
+
+# Ignore the 'node_modules' directory anywhere in the repository
+node_modules/
+
+# Ignore specific files
+secrets.yml
+file.txt
+
+# Ignore OS-specific temporary files
+.DS_Store
+Thumbs.db
+
+# Use '!' to negate a pattern and re-include a specific file
+# Ignore all .txt files in the 'docs/' directory, except 'important.txt'
+docs/*.txt
+!docs/important.txt
