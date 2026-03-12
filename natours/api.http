@@ -4,7 +4,7 @@
 GET {{hostname}}/api/v1/tours
 
 ### GET specific tour
-GET {{hostname}}/api/v1/tours/2
+GET {{hostname}}/api/v1/tours/14
 
 ### CREATE tour
 POST {{hostname}}/api/v1/tours
