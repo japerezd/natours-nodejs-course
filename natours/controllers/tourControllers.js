@@ -16,6 +16,16 @@ exports.checkID = (req, res, next, value) => {
   next();
 }
 
+exports.checkBody = (req, res, next) => {
+  if (!req.body.name || !req.body.price) {
+    res.status(400).json({
+      status: 'fail',
+      message: 'Your request is missing some properties',
+    });
+  }
+  next();
+}
+
 // 2. Route handlers
 exports.getAllTours = (req, res) => {
   res.status(200).json({
