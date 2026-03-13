@@ -12,7 +12,7 @@ exports.checkID = (req, res, next, value) => {
     });
   }
   next();
-}
+};
 
 exports.checkBody = (req, res, next) => {
   if (!req.body.name || !req.body.price) {
@@ -22,7 +22,7 @@ exports.checkBody = (req, res, next) => {
     });
   }
   next();
-}
+};
 
 // 2. Route handlers
 exports.getAllTours = (req, res) => {
@@ -57,7 +57,7 @@ exports.createTour = (req, res) => {
   fs.writeFile(
     `${__dirname}/dev-data/data/tours-simple.json`,
     JSON.stringify(tours),
-    (err) => {
+    () => {
       res.status(201).json({
         status: 'success',
         data: {
