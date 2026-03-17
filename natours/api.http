@@ -14,7 +14,8 @@ Content-Type: application/json
   "name": "Test tour 2",
   "price": 10,
   "duration": 5,
-  "difficulty": "easy"
+  "difficulty": "easy",
+  "rating": 4.8
 }
 
 ### Update tour
