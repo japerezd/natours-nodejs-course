@@ -19,11 +19,11 @@ Content-Type: application/json
 }
 
 ### Update tour
-PATCH {{hostname}}/api/v1/tours/2
+PATCH {{hostname}}/api/v1/tours/69b84bf7d74ed03a0c4bff46
 Content-Type: application/json
 
 {
-  "duration": 19
+  "price": 500
 }
 
 ### Delete tour
