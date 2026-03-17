@@ -11,7 +11,7 @@ POST {{hostname}}/api/v1/tours
 Content-Type: application/json
 
 {
-  "name": "Test tour 2",
+  "name": "Test tour 3",
   "price": 10,
   "duration": 5,
   "difficulty": "easy",
@@ -27,7 +27,7 @@ Content-Type: application/json
 }
 
 ### Delete tour
-DELETE  {{hostname}}/api/v1/tours/2
+DELETE  {{hostname}}/api/v1/tours/69b9b94c3056adf1de01e088
 
 ### GET all users
 GET {{hostname}}/api/v1/users/
