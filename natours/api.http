@@ -3,6 +3,9 @@
 ### GET all tours
 GET {{hostname}}/api/v1/tours?page=5&limit=10
 
+### GET Top 5 tours
+GET {{hostname}}/api/v1/tours/top-5-cheap
+
 ### GET specific tour
 GET {{hostname}}/api/v1/tours/69b9c18fe4be8683c5007208
 
