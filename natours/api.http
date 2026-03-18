@@ -1,7 +1,7 @@
 @hostname = http://localhost:3000
 
 ### GET all tours
-GET {{hostname}}/api/v1/tours?sort=-price,ratingsAverage
+GET {{hostname}}/api/v1/tours?fields=name,price
 
 ### GET specific tour
 GET {{hostname}}/api/v1/tours/69b9c18fe4be8683c5007208
