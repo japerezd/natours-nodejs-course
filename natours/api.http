@@ -12,6 +12,9 @@ GET {{hostname}}/api/v1/tours/69b9c18fe4be8683c5007208
 ### GET tour stats
 GET {{hostname}}/api/v1/tours/tour-stats
 
+### GET monthly plans
+GET {{hostname}}/api/v1/tours/monthly-plan/2021
+
 ### CREATE tour
 POST {{hostname}}/api/v1/tours
 Content-Type: application/json
