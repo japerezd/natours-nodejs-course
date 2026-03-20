@@ -20,14 +20,15 @@ POST {{hostname}}/api/v1/tours
 Content-Type: application/json
 
 {
-  "name": "Super Secret tour",
+  "name": "Test Tour good",
   "duration": 4,
-  "secret": true,
+  "secret": false,
   "maxGroupSize": 10,
-  "difficulty": "difficult",
+  "difficulty": "extreme",
   "price": 997,
   "summary": "Testing the tour",
-  "imageCover": "tour-3-cover.jpg"
+  "imageCover": "tour-3-cover.jpg",
+  "ratingsAverage": 66
 }
 
 ### Update tour
