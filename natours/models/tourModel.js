@@ -56,6 +56,10 @@ const tourSchema = new mongoose.Schema(
       select: false, // This hides createdAt in the response
     },
     startDates: [Date],
+    secretTour: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     toJSON: { virtuals: true }, // Incluye virtuales cuando envías datos al cliente (API responses)
@@ -67,7 +71,7 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
-// Document middleware: runs before .save() and .create()
+// DOCUMENT MIDDLEWARE: runs before .save() and .create()
 tourSchema.pre('save', function () {
   this.slug = slugify(this.name, { lower: true });
 });
@@ -79,6 +83,13 @@ tourSchema.pre('save', function () {
 // tourSchema.post('save', function (doc) {
 //   console.log(doc);
 // });
+
+// QUERY MIDDLEWARE
+// tourSchema.pre('find', function () {
+// this works for find and findOne (and any other query that starts with find)
+tourSchema.pre(/^find/, function () {
+  this.find({ secretTour: { $ne: true } });
+});
 
 // Models start with capital letters
 // Create new collection
