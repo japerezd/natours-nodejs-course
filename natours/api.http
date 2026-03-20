@@ -24,11 +24,12 @@ Content-Type: application/json
   "duration": 4,
   "secret": false,
   "maxGroupSize": 10,
-  "difficulty": "extreme",
+  "priceDiscount": 999,
+  "difficulty": "easy",
   "price": 997,
   "summary": "Testing the tour",
   "imageCover": "tour-3-cover.jpg",
-  "ratingsAverage": 66
+  "ratingsAverage": 4
 }
 
 ### Update tour
