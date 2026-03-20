@@ -89,6 +89,20 @@ tourSchema.pre('save', function () {
 // this works for find and findOne (and any other query that starts with find)
 tourSchema.pre(/^find/, function () {
   this.find({ secretTour: { $ne: true } });
+
+  this.start = Date.now();
+});
+
+tourSchema.post(/^find/, function (docs) {
+  console.log(`Query took ${Date.now() - this.start} milliseconds`);
+  // console.log(docs);
+});
+
+// AGGREGATION MIDDLEWARE
+tourSchema.pre('aggregate', function () {
+  this.pipeline().unshift({
+    $match: { secretTour: { $ne: true } },
+  });
 });
 
 // Models start with capital letters
