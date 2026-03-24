@@ -24,7 +24,7 @@ Content-Type: application/json
   "duration": 4,
   "secret": false,
   "maxGroupSize": 10,
-  "priceDiscount": 999,
+"priceDiscount": 999,
   "difficulty": "easy",
   "price": 997,
   "summary": "Testing the tour",
