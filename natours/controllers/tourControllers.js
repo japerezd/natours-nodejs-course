@@ -1,5 +1,7 @@
 const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
+const AppError = require('../utils/appError');
+const catchAsync = require('../utils/catchAsync');
 
 // const tours = JSON.parse(
 //   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`),
@@ -23,213 +25,177 @@ exports.aliasTopTours = (req, res, next) => {
 };
 
 // 2. Route handlers
-exports.getAllTours = async (req, res) => {
-  try {
-    // Execute the query
-    const features = new APIFeatures(Tour.find(), req.query)
-      .filter()
-      .sort()
-      .limitFields()
-      .paginate();
-    const tours = await features.query;
+exports.getAllTours = catchAsync(async (req, res, next) => {
+  // Execute the query
+  const features = new APIFeatures(Tour.find(), req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate();
+  const tours = await features.query;
 
-    // Send response
-    res.status(200).json({
-      requestedAt: req.requestTime,
-      status: 'success',
-      results: tours.length,
-      data: {
-        tours,
+  // Send response
+  res.status(200).json({
+    requestedAt: req.requestTime,
+    status: 'success',
+    results: tours.length,
+    data: {
+      tours,
+    },
+  });
+});
+
+exports.getTour = catchAsync(async (req, res, next) => {
+  // id comes from /:id (tourRoutes)
+  const tour = await Tour.findById(req.params.id);
+  // Tour.findOne({ _id: req.params.id })
+
+  if (!tour) {
+    return next(new AppError('No tour found with that ID', 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour,
+    },
+  });
+});
+
+exports.createTour = catchAsync(async (req, res) => {
+  const newTour = await Tour.create(req.body);
+
+  res.status(201).json({
+    status: 'success',
+    data: {
+      tour: newTour,
+    },
+  });
+});
+
+exports.updateTour = catchAsync(async (req, res, next) => {
+  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+    new: true, // Returns new object updated
+    runValidators: true,
+  });
+
+  if (!tour) {
+    return next(new AppError('No tour found with that ID', 404));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour,
+    },
+  });
+});
+
+exports.deleteTour = catchAsync(async (req, res, next) => {
+  const tour = await Tour.findByIdAndDelete(req.params.id);
+
+  if (!tour) {
+    return next(new AppError('No tour found with that ID', 404));
+  }
+
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
+});
+
+exports.getTourStats = catchAsync(async (req, res) => {
+  const stats = await Tour.aggregate([
+    {
+      $match: {
+        ratingsAverage: { $gte: 4.5 },
       },
-    });
-  } catch (error) {
-    res.status(404).json({
-      status: 'fail',
-      message: error,
-    });
-  }
-};
-
-exports.getTour = async (req, res) => {
-  try {
-    // id comes from /:id (tourRoutes)
-    const tour = await Tour.findById(req.params.id);
-    // Tour.findOne({ _id: req.params.id })
-
-    res.status(200).json({
-      status: 'success',
-      data: {
-        tour,
+    },
+    {
+      $group: {
+        _id: null, // null -> is taking all the data, is not grouping for specific field
+        // _id: '$difficulty',
+        // _id: { $toUpper: '$difficulty' },
+        numTours: { $sum: 1 }, // suma 1 cada registro hasta tener el total
+        numRatings: { $sum: '$ratingsQuantity' },
+        avgRating: { $avg: '$ratingsAverage' },
+        avgPrice: { $avg: '$price' },
+        minPrice: { $min: '$price' },
+        maxPrice: { $max: '$price' },
       },
-    });
-  } catch (error) {
-    res.status(404).json({
-      status: 'fail',
-      message: error,
-    });
-  }
-};
+    },
+    {
+      $sort: { avgPrice: 1 }, // Ordena de menor a mayor
+    },
+    // {
+    //   $match: {
+    //     _id: {
+    //       $ne: 'EASY', // not equal to easy
+    //     },
+    //   },
+    // },
+  ]);
 
-exports.createTour = async (req, res) => {
-  // console.log(req.body);
-  try {
-    const newTour = await Tour.create(req.body);
+  res.status(200).json({
+    status: 'success',
+    data: { stats },
+  });
+});
 
-    res.status(201).json({
-      status: 'success',
-      data: {
-        tour: newTour,
-      },
-    });
-  } catch (error) {
-    res.status(400).json({
-      status: 'fail',
-      message: error,
-    });
-  }
-};
+exports.getMonthlyPlan = catchAsync(async (req, res) => {
+  const year = req.params.year * 1;
 
-exports.updateTour = async (req, res) => {
-  try {
-    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-      new: true, // Returns new object updated
-      runValidators: true,
-    });
-    res.status(200).json({
-      status: 'success',
-      data: {
-        tour,
-      },
-    });
-  } catch (error) {
-    res.status(404).json({
-      status: 'fail',
-      message: error,
-    });
-  }
-};
-
-exports.deleteTour = async (req, res) => {
-  try {
-    await Tour.findByIdAndDelete(req.params.id);
-    res.status(204).json({
-      status: 'success',
-      data: null,
-    });
-  } catch (error) {
-    res.status(404).json({
-      status: 'fail',
-      message: error,
-    });
-  }
-};
-
-exports.getTourStats = async (req, res) => {
-  try {
-    const stats = await Tour.aggregate([
-      {
-        $match: {
-          ratingsAverage: { $gte: 4.5 },
+  const plan = await Tour.aggregate([
+    // $unwind: Descompone el array 'startDates' en documentos individuales
+    // Si un tour tiene 3 fechas, creará 3 documentos separados (uno por fecha)
+    // Ejemplo: { name: 'Tour A', startDates: [fecha1, fecha2] }
+    //       -> { name: 'Tour A', startDates: fecha1 }
+    //       -> { name: 'Tour A', startDates: fecha2 }
+    {
+      $unwind: '$startDates',
+    },
+    // $match: Filtra las fechas que estén dentro del año especificado
+    // Solo mantiene tours cuya fecha de inicio esté entre enero 1 y diciembre 31 del año dado
+    {
+      $match: {
+        startDates: {
+          $gte: new Date(`${year}-01-01`), // Mayor o igual a enero 1
+          $lte: new Date(`${year}-12-31`), // Menor o igual a diciembre 31
         },
       },
-      {
-        $group: {
-          _id: null, // null -> is taking all the data, is not grouping for specific field
-          // _id: '$difficulty',
-          // _id: { $toUpper: '$difficulty' },
-          numTours: { $sum: 1 }, // suma 1 cada registro hasta tener el total
-          numRatings: { $sum: '$ratingsQuantity' },
-          avgRating: { $avg: '$ratingsAverage' },
-          avgPrice: { $avg: '$price' },
-          minPrice: { $min: '$price' },
-          maxPrice: { $max: '$price' },
-        },
+    },
+    // $group: Agrupa los tours por mes y calcula estadísticas
+    {
+      $group: {
+        _id: { $month: '$startDates' }, // Agrupa por mes (1-12)
+        numTourStarts: { $sum: 1 }, // Cuenta cuántos tours inician en ese mes
+        tours: { $push: '$name' }, // Crea un array con los nombres de los tours
       },
-      {
-        $sort: { avgPrice: 1 }, // Ordena de menor a mayor
-      },
-      // {
-      //   $match: {
-      //     _id: {
-      //       $ne: 'EASY', // not equal to easy
-      //     },
-      //   },
-      // },
-    ]);
+    },
+    // $addFields: Añade un nuevo campo 'month' con el valor del _id
+    // Esto hace más legible el resultado (en lugar de usar _id para el mes)
+    {
+      $addFields: { month: '$_id' },
+    },
+    // $project: Oculta el campo _id de la respuesta
+    // _id: 0 significa que NO se mostrará en el resultado final
+    {
+      $project: { _id: 0 },
+    },
+    // $sort: Ordena los resultados por número de tours de forma descendente
+    // -1 = descendente (el mes con más tours aparecerá primero)
+    {
+      $sort: { numTourStarts: -1 },
+    },
+    // $limit: Limita el resultado a los primeros 12 documentos
+    // Como hay 12 meses máximo, esto asegura que no haya más resultados
+    {
+      $limit: 12,
+    },
+  ]);
 
-    res.status(200).json({
-      status: 'success',
-      data: { stats },
-    });
-  } catch (error) {
-    res.status(404).json({
-      status: 'fail',
-      message: error,
-    });
-  }
-};
-
-exports.getMonthlyPlan = async (req, res) => {
-  try {
-    const year = req.params.year * 1;
-
-    const plan = await Tour.aggregate([
-      // $unwind: Descompone el array 'startDates' en documentos individuales
-      // Si un tour tiene 3 fechas, creará 3 documentos separados (uno por fecha)
-      // Ejemplo: { name: 'Tour A', startDates: [fecha1, fecha2] }
-      //       -> { name: 'Tour A', startDates: fecha1 }
-      //       -> { name: 'Tour A', startDates: fecha2 }
-      {
-        $unwind: '$startDates',
-      },
-      // $match: Filtra las fechas que estén dentro del año especificado
-      // Solo mantiene tours cuya fecha de inicio esté entre enero 1 y diciembre 31 del año dado
-      {
-        $match: {
-          startDates: {
-            $gte: new Date(`${year}-01-01`), // Mayor o igual a enero 1
-            $lte: new Date(`${year}-12-31`), // Menor o igual a diciembre 31
-          },
-        },
-      },
-      // $group: Agrupa los tours por mes y calcula estadísticas
-      {
-        $group: {
-          _id: { $month: '$startDates' }, // Agrupa por mes (1-12)
-          numTourStarts: { $sum: 1 }, // Cuenta cuántos tours inician en ese mes
-          tours: { $push: '$name' }, // Crea un array con los nombres de los tours
-        },
-      },
-      // $addFields: Añade un nuevo campo 'month' con el valor del _id
-      // Esto hace más legible el resultado (en lugar de usar _id para el mes)
-      {
-        $addFields: { month: '$_id' },
-      },
-      // $project: Oculta el campo _id de la respuesta
-      // _id: 0 significa que NO se mostrará en el resultado final
-      {
-        $project: { _id: 0 },
-      },
-      // $sort: Ordena los resultados por número de tours de forma descendente
-      // -1 = descendente (el mes con más tours aparecerá primero)
-      {
-        $sort: { numTourStarts: -1 },
-      },
-      // $limit: Limita el resultado a los primeros 12 documentos
-      // Como hay 12 meses máximo, esto asegura que no haya más resultados
-      {
-        $limit: 12,
-      },
-    ]);
-
-    res.status(200).json({
-      status: 'success',
-      data: { plan },
-    });
-  } catch (error) {
-    res.status(404).json({
-      status: 'fail',
-      message: error,
-    });
-  }
-};
+  res.status(200).json({
+    status: 'success',
+    data: { plan },
+  });
+});

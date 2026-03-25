@@ -7,7 +7,7 @@ GET {{hostname}}/api/v1/tours
 GET {{hostname}}/api/v1/tours/top-5-cheap
 
 ### GET specific tour
-GET {{hostname}}/api/v1/tours/69bd83895bc017ff9612f4e0
+GET {{hostname}}/api/v1/tours/69bad40961875d9d5b440fc1
 
 ### GET tour stats
 GET {{hostname}}/api/v1/tours/tour-stats
@@ -20,7 +20,6 @@ POST {{hostname}}/api/v1/tours
 Content-Type: application/json
 
 {
-  "name": "Test Tour good",
   "duration": 4,
   "secret": false,
   "maxGroupSize": 10,
@@ -41,7 +40,7 @@ Content-Type: application/json
 }
 
 ### Delete tour
-DELETE  {{hostname}}/api/v1/tours/69b9b94c3056adf1de01e088
+DELETE  {{hostname}}/api/v1/tours/69bad40961875d9d5b440fc1
 
 ### GET all users
 GET {{hostname}}/api/v1/users/
