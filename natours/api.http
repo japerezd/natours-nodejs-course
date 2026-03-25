@@ -20,11 +20,11 @@ POST {{hostname}}/api/v1/tours
 Content-Type: application/json
 
 {
-  "name": "The Snow Adventurer",
+  "name": "Tshort",
   "duration": 4,
   "secret": false,
   "maxGroupSize": 10,
-"priceDiscount": 100,
+"priceDiscount": 1080,
   "difficulty": "easy",
   "price": 997,
   "summary": "Testing the tour",
